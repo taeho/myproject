@@ -7,7 +7,6 @@ from pybo import db
 from pybo.models import Question, Answer
 
 # 답변모델 answer를 관리하는 블루프린트.
-
 bp = Blueprint('answer', __name__, url_prefix='/answer')
 
 # create 함수의 매개변수 question_id는 URL 에서 전달된다.
@@ -17,7 +16,7 @@ bp = Blueprint('answer', __name__, url_prefix='/answer')
 @bp.route('/create/<int:question_id>', methods=('POST',))
 def create(question_id):
     question = Question.query.get_or_404(question_id)
-    content = request.form['content']   # name 속성이 content 인값 전송된 데이터 의미.
+    content = request.form['content']
     answer = Answer(content=content, create_date=datetime.now())
     question.answer_set.append(answer)
     db.session.commit()

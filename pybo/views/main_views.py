@@ -15,7 +15,7 @@ def hello_pybo():
 def index():
     return redirect(url_for('question._list'))
 
-@bp.route('/detail/<int:question_id>/')
-def detail(question_id):
-    question = Question.query.get(question_id)
-    return render_template('question/question_detail.html', question=question)
+# @bp.route('/detail/<int:question_id>/')
+# def detail(question_id):
+#     question = Question.query.get(question_id)
+#     return render_template('question/question_detail.html', question=question)

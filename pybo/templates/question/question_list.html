@@ -17,7 +17,7 @@
             <td>
                 <a href="{{ url_for('question.detail', question_id=question.id) }}">{{ question.subject }}</a>
             </td>
-            <td>{{ question.create_date }}</td>
+            <td>{{ question.create_date|datetime }}</td>
         </tr>
         {% endfor %}
         {% else %}
@@ -27,7 +27,7 @@
         {% endif %}
         </tbody>
     </table>
-    <!-- 페이징처리 시작 생략 기능까지 완벽한 플라스크의 paginate 함수 -->
+    <!-- 페이징처리 시작 -->
     <ul class="pagination justify-content-center">
         <!-- 이전페이지 -->
         {% if question_list.has_prev %}

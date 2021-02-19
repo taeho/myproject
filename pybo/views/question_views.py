@@ -13,7 +13,12 @@ bp = Blueprint('question', __name__, url_prefix='/question')
 # 관리 유지보수 용이를 위해 분리
 @bp.route('/list/')
 def _list():
+    page = request.args.get('page', type=int, default=1)  # 페이지,  type=int는 page 파라미터가 정수임
     question_list = Question.query.order_by(Question.create_date.desc())
+    # 조회한 데이터 question_list에 paginate 함수로 페이징을 적용
+    #  1번째 인자로 전달된 page는 현재 조회할 페이지의 번호를 의미하고,
+    #  2번째 인자 per_page로 전달된 10은 페이지마다 보여 줄 게시물이 10건임을 의미
+    question_list = question_list.paginate(page, per_page=10)
     return render_template('question/question_list.html', question_list=question_list)
 
 @bp.route('/detail/<int:question_id>/')

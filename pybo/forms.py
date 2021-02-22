@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField
-from wtforms.validators import DataRequired
+from wtforms import StringField, TextAreaField, PasswordField
+from wtforms.fields.html5 import EmailField
+from wtforms.validators import DataRequired, Length, EqualTo, Email
 
 # 질문 등록을 할 때 사용할 QuestionForm 클래스를 작성
 # QuestionForm 클래스는 Flask-WTF 모듈의 FlaskForm 클래스를 상속받으며 subject, content 속성을 포함
@@ -12,3 +13,17 @@ class QuestionForm(FlaskForm):
 
 class AnswerForm(FlaskForm):
     content = TextAreaField('내용', validators=[DataRequired('내용은 필수입력 항목입니다.')])
+
+
+# --------------------------------- [edit] ---------------------------------- #
+# username은 필수 항목이면서 길이를 제한해야 하므로 validators 옵션에 필수 항목으로 DataRequired()와
+# 길이 조건 Length(min=3, max=25)를 추가.
+# ‘비밀번호’, ‘비밀번호확인’ 필드 password1, password2를 PasswordField로 추가
+# 두 값은 일치해야 하므로 password1의 validators 옵션에 EqualTo 검증을 추가
+class UserCreateForm(FlaskForm):
+    username = StringField('사용자이름', validators=[DataRequired(), Length(min=3, max=25)])
+    password1 = PasswordField('비밀번호', validators=[
+        DataRequired(), EqualTo('password2', '비밀번호가 일치하지 않습니다')])
+    password2 = PasswordField('비밀번호확인', validators=[DataRequired()])
+    email = EmailField('이메일', validators=[DataRequired(), Email()])
+# --------------------------------------------------------------------------- #

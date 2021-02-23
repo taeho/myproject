@@ -27,3 +27,8 @@ class UserCreateForm(FlaskForm):
     password2 = PasswordField('비밀번호확인', validators=[DataRequired()])
     email = EmailField('이메일', validators=[DataRequired(), Email()])
 # --------------------------------------------------------------------------- #
+
+# FlaskForm 클래스를 상속받아 UserLoginForm을 만들었다. username, password 필드를 추가
+class UserLoginForm(FlaskForm):
+    username = StringField('사용자이름', validators=[DataRequired(), Length(min=3, max=25)])
+    password = PasswordField('비밀번호', validators=[DataRequired()])

@@ -1,3 +1,5 @@
+import functools
+
 from flask import Blueprint, url_for, render_template, flash, request, session, g
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import redirect
@@ -76,3 +78,14 @@ def logout():
     session.clear()
     return redirect(url_for('main.index'))
 # --------------------------------------------------------------------------- #
+
+# 데코레이터 함수를 생성
+#  @login_required 애너테이션을 지정하면 login_required 데코레이터 함수가 먼저 실행
+# login_required 함수는 g.user가 있는지를 조사하여 없으면 로그인 URL로 리다이렉트 하고 g.user가 있으면 원래 함수를 그대로 실행
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for('auth.login'))
+        return view(**kwargs)
+    return wrapped_view

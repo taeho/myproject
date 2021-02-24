@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from flask import Blueprint, url_for, request, render_template
+from flask import Blueprint, url_for, request, render_template, g
 from werkzeug.utils import redirect
 
+from .auth_views import login_required
 from .. import db
 from ..forms import AnswerForm
 from ..models import Question, Answer
@@ -15,12 +16,14 @@ bp = Blueprint('answer', __name__, url_prefix='/answer')
 # @bp.route의 methods 속성에는 'POST'를 지정
 # @bp.route에 똑같은 폼 방식을 지정하지 않으면 다음과 같은 오류가 발생 - method not allowed
 @bp.route('/create/<int:question_id>', methods=('POST',))
+@login_required
 def create(question_id):
     form = AnswerForm()
     question = Question.query.get_or_404(question_id)
     if form.validate_on_submit():
         content = request.form['content']
-        answer = Answer(content=content, create_date=datetime.now())
+        #answer = Answer(content=content, create_date=datetime.now())
+        answer = Answer(content=content, create_date=datetime.now(), user=g.user)
         question.answer_set.append(answer)
         db.session.commit()
         return redirect(url_for('question.detail', question_id=question_id))

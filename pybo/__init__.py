@@ -55,12 +55,13 @@ def create_app():
 
     # views 폴더의 블루프린트 적용
     # 블루프린트를 사용하려면 main_views.py파일에서 생성한 블루프린트 객체인 bp를 등록
-    from .views import main_views, question_views, answer_views, auth_views
+    from .views import main_views, question_views, answer_views, auth_views, comment_views
     app.register_blueprint(main_views.bp)
     # 생성한 블루프린터 객체를 등록.
     app.register_blueprint(question_views.bp)
     app.register_blueprint(answer_views.bp)
     app.register_blueprint(auth_views.bp)
+    app.register_blueprint(comment_views.bp)
 
     # --------------------------------- [edit] ---------------------------------- #
     # 필터

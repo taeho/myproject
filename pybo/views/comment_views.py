@@ -21,7 +21,8 @@ def create_question(question_id):
         comment = Comment(user=g.user, content=form.content.data, create_date=datetime.now(), question=question)
         db.session.add(comment)
         db.session.commit()
-        return redirect(url_for('question.detail', question_id=question_id))
+        return redirect('{}#comment_{}'.format(
+            url_for('question.detail', question_id=question_id), comment.id))
     return render_template('comment/comment_form.html', form=form)
 
 # 이어서 댓글을 수정할 수 있도록 url_for('comment.modify_question', comment_id=comment.id)
@@ -41,7 +42,8 @@ def modify_question(comment_id):
             form.populate_obj(comment)
             comment.modify_date = datetime.now()  # 수정일시 저장
             db.session.commit()
-            return redirect(url_for('question.detail', question_id=comment.question.id))
+            return redirect('{}#comment_{}'.format(
+                url_for('question.detail', question_id=comment.question.id), comment.id))
     else:
         form = CommentForm(obj=comment)
     return render_template('comment/comment_form.html', form=form)
@@ -71,7 +73,8 @@ def create_answer(answer_id):
         comment = Comment(user=g.user, content=form.content.data, create_date=datetime.now(), answer=answer)
         db.session.add(comment)
         db.session.commit()
-        return redirect(url_for('question.detail', question_id=answer.question.id))
+        return redirect('{}#comment_{}'.format(
+            url_for('question.detail', question_id=answer.question.id), comment.id))
     return render_template('comment/comment_form.html', form=form)
 
 
@@ -88,7 +91,8 @@ def modify_answer(comment_id):
             form.populate_obj(comment)
             comment.modify_date = datetime.now()  # 수정일시 저장
             db.session.commit()
-            return redirect(url_for('question.detail', question_id=comment.answer.question.id))
+            return redirect('{}#comment_{}'.format(
+                url_for('question.detail', question_id=comment.answer.question.id), comment.id))
     else:
         form = CommentForm(obj=comment)
     return render_template('comment/comment_form.html', form=form)

@@ -1,12 +1,10 @@
 from pybo import db
 
-# SQLAlchemy에 다대다 관계를 적용하도록 계정과 질문이 한 쌍을 이루는 테이블 객체 question_voter를 생성
-# 테이블 객체란 다대다 관계를 정의하려고 db.Table 클래스로 정의되는 객체
-# question_voter는 user_id와 question_id 모두 기본키이므로 다대다 관계가 성립되는 테이블
+#사용하는 클래스보다 위에 위치해야 함.
 question_voter = db.Table(
     'question_voter',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True),
-    db.Column('question_id', db.Integer, db.ForeignKey('question.id', ondelete='CASCADE'), primary_key=True)
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=True),
+    db.Column('question_id', db.Integer, db.ForeignKey('question.id', ondelete='CASCADE'), nullable=True)
 )
 
 answer_voter = db.Table(
@@ -16,24 +14,29 @@ answer_voter = db.Table(
 )
 
 class Question(db.Model):
+    #기본키
     id = db.Column(db.Integer, primary_key=True)
     subject = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text(), nullable=False)
     create_date = db.Column(db.DateTime(), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
-    user = db.relationship('User', backref=db.backref('question_set'))
     modify_date = db.Column(db.DateTime(), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user = db.relationship('User', backref=db.backref('question_set')) #backref : User 모델 데이터를 통해 Question 모델 데이터를 참조
     voter = db.relationship('User', secondary=question_voter, backref=db.backref('question_voter_set'))
+    menu_id = db.Column(db.Integer(), db.ForeignKey('menu.id', ondelete='CASCADE'), nullable=False, server_default='1')
+    view_cnt = db.Column(db.Integer, nullable=False, server_default='0')
 
 class Answer(db.Model):
+    #기본키
     id = db.Column(db.Integer, primary_key=True)
+    #외부키
     question_id = db.Column(db.Integer, db.ForeignKey('question.id', ondelete='CASCADE'))
     question = db.relationship('Question', backref=db.backref('answer_set'))
     content = db.Column(db.Text(), nullable=False)
     create_date = db.Column(db.DateTime(), nullable=False)
+    modify_date = db.Column(db.DateTime(), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     user = db.relationship('User', backref=db.backref('answer_set'))
-    modify_date = db.Column(db.DateTime(), nullable=True)
     voter = db.relationship('User', secondary=answer_voter, backref=db.backref('answer_voter_set'))
 
 class User(db.Model):
@@ -41,16 +44,53 @@ class User(db.Model):
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    intro = db.Column(db.Text(), nullable=True)
+    image_path = db.Column(db.String(300), nullable=True)
+    create_date = db.Column(db.DateTime(), nullable=False)
+    modify_date = db.Column(db.DateTime(), nullable=True)
 
-# 댓글에 사용할 Comment 모델을 작성
 class Comment(db.Model):
+    #기본키
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     user = db.relationship('User', backref=db.backref('comment_set'))
     content = db.Column(db.Text(), nullable=False)
     create_date = db.Column(db.DateTime(), nullable=False)
-    modify_date = db.Column(db.DateTime())
+    modify_date = db.Column(db.DateTime(), nullable=True)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id', ondelete='CASCADE'), nullable=True)
     question = db.relationship('Question', backref=db.backref('comment_set'))
     answer_id = db.Column(db.Integer, db.ForeignKey('answer.id', ondelete='CASCADE'), nullable=True)
     answer = db.relationship('Answer', backref=db.backref('comment_set'))
+
+class Menu(db.Model):
+    #기본키
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(50), nullable=False)
+    remark = db.Column(db.Text(), nullable=False)
+    sort_no = db.Column(db.Integer, nullable=False)
+
+class Apireq(db.Model):
+    #기본키
+    id = db.Column(db.Integer, primary_key=True)
+    subject = db.Column(db.String(200), nullable=False)
+    service_key = db.Column(db.String(100), nullable=False)
+    target_url = db.Column(db.String(200), nullable=False)
+    parameter = db.Column(db.String(200), nullable=False)
+    data_type = db.Column(db.String(10), nullable=False)
+    create_date = db.Column(db.DateTime(), nullable=False)
+    modify_date = db.Column(db.DateTime(), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user = db.relationship('User', backref=db.backref('apireq_set'))
+
+class Apires(db.Model):
+    #기본키
+    id = db.Column(db.Integer, primary_key=True)
+    apireq_id = db.Column(db.Integer, db.ForeignKey('apireq.id', ondelete='CASCADE'))
+    apireq = db.relationship('Apireq', backref=db.backref('apires_set'))
+    parameter = db.Column(db.String(200), nullable=False)
+    data_type = db.Column(db.String(10), nullable=False)
+    result_data = db.Column(db.Text(), nullable=False)
+    create_date = db.Column(db.DateTime(), nullable=False)
+    modify_date = db.Column(db.DateTime(), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user = db.relationship('User', backref=db.backref('apires_set'))

@@ -1,21 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-{% include 'category.html' %}
 <div class="col-sm-12 col-md-9 col-lg-10 p-2">
     <div class="container">
-        <h5 class="my-3 border-bottom pb-2">질문등록</h5>
-        <!-- hidden_tag() 처리 하지 않은 경우, form.validate_on_submit() 처리 시 항상 False 리턴
-        <form method="post" class="post-form my-3">
-            {{ form.csrf_token }}
-            {{ form.subject.label }}<br>
-            {{ form.subject() }}<br>
-
-            {{ form.content.label }}<br>
-            {{ form.content() }}<br>
-
-            <button type="submit" class="btn btn-primary">저장하기</button>
-        </form>
-        -->
+        <h5 class="my-3 border-bottom pb-2">API 호출</h5>
         <form method="post" class="post-form my-3">
             {{ form.csrf_token }}
             {% for field, errors in form.errors.items() %}
@@ -29,11 +16,19 @@
                     value="{{ form.subject.data or '' }}">
             </div>
             <div class="form-group">
-                <label for="content">내용</label>
-                <textarea class="form-control" name="content" id="content" rows="5">{{ form.content.data or '' }}</textarea>
-                {{ simplemde.load_id("content") }}
+                <label for="service_key">서비스키</label>
+                <input type="text" class="form-control" name="service_key" id="service_key"
+                    value="{{ form.service_key.data or '' }}">
             </div>
-            <input type="hidden" id="menu_id" name="menu_id" value="{{ menu.id }}">
+            <div class="form-group">
+                <label for="target_url">URL</label>
+                <input type="text" class="form-control" name="target_url" id="target_url"
+                    value="{{ form.target_url.data or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="parameter">파라미터</label>
+                <textarea class="form-control" name="parameter" id="parameter" rows="5">{{ form.parameter.data or '' }}</textarea>
+            </div>
             <button type="submit" class="btn btn-primary">저장하기</button>
         </form>
     </div>

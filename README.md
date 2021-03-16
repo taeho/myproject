@@ -21,3 +21,21 @@ python flask crud
   ; aws 라이트세일, 도메인
   ; ModaXterm 터미널, Gunicorn, Nginx
   ; PostgreSQL 데이터 베이스 
+
+(5) 개발환경 구성시 필요한 설치 정보
+
+pip install Flask-Migrate
+
+pip install flask-mysql
+
+pip install flask-markdown
+
+pip install Flask-SimpleMDE
+
+pip install flask-wtf
+
+pip install email_validator
+
+pip install Pillow
+
+pip install BeautifulSoup4
